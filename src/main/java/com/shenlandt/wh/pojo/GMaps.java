@@ -53,7 +53,6 @@ public class GMaps {
     
     public final boolean saveLR(int zoom, GPoint point, PureImage image){
         GMapImage gimage = (GMapImage)image;
-        
 //        String str1 = String.format("%02d", zoom);
         long x = point.getX();
         long y = point.getY();
@@ -65,7 +64,6 @@ public class GMaps {
         String str3 = y+"";
         
         String path = "D://GisMap//L" + str1 + "//R" + str3 + "//";
-        
         String filePath = path + "C" + str2 + ".png";
         
         gimage.Save(filePath, "png");

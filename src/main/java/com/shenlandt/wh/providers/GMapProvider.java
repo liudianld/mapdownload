@@ -1,5 +1,6 @@
 package com.shenlandt.wh.providers;
 
+import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
@@ -156,6 +157,16 @@ public abstract class GMapProvider {
       
       LOGGER.info("生成缓存图片 位置在："+filePath);
     }
+    
+    public void CacheImage(int zoom, GPoint point, PureImage img) throws IOException {
+        GMapImage image = (GMapImage)img;
+          
+        String filePath = this.getCachePath(zoom, point);
+        
+        image.Save(filePath, "png");
+        
+        LOGGER.info("生成缓存图片 位置在："+filePath);
+      }
     
     public void CacheImage(String path, String url) throws IOException{
         GMapImage image = (GMapImage)GetTileImageUsingHttp(url);

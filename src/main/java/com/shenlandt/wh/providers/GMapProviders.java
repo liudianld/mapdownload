@@ -41,7 +41,7 @@ public class GMapProviders
 	    list = new ArrayList<GMapProvider>();
 	    map = new HashMap<>();
         try {
-            Class type = GMapProviders.class;
+            Class<GMapProviders> type = GMapProviders.class;
             for (Field p : type.getFields())
             {
                 Object tempVar = Reflections.getFieldValue(this, p.getName());
