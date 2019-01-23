@@ -1,0 +1,360 @@
+/* general styles */
+
+html, body, input, select, button, textarea, table {
+	font-size: 100%;
+	font-family: '华文细黑', 'Helvetica Neue', Helvetica, Arial, sans-serif;
+	-webkit-font-smoothing: antialiased;
+	-moz-osx-font-smoothing: grayscale;
+	text-rendering: optimizeLegibility;
+}
+
+body {
+	line-height: 1.5;
+	color: #333;
+}
+
+p {
+	margin: 24px 0;
+}
+
+a, a span.hljs-string {
+	color: #1EB300;
+}
+
+a:hover, a:focus {
+	color: #160;
+}
+
+hr {
+	background: #ddd;
+	color: #ddd;
+	height: 1px;
+	margin: 0 0 1.4em;
+	border: none;
+	clear: both;
+}
+
+.clearfix:before,
+.clearfix:after {
+	content: " ";
+	display: table;
+}
+
+.clearfix:after {
+	clear: both;
+}
+
+table {
+	width: 100%;
+	border-collapse: collapse;
+	margin-bottom: 2em;
+}
+
+th, td {
+	text-align: left;
+	border: 0;
+	border: 1px solid #eee;
+	padding: 0.5em 1em 0.5em 1em;
+}
+
+table th {
+	background: #eee;
+}
+
+table td {
+	color: #666;
+}
+
+table td:first-child {
+	color: #777;
+}
+
+table td:last-child {
+	color: black;
+}
+
+table td code i {
+	color: #00A707;
+}
+
+table td code b {
+	color: black;
+	font-weight: normal;
+}
+
+
+/* headings */
+
+h2 {
+	font-family: '宋体','微软雅黑',Arial,sans-serif;
+	font-size: 2em;
+	font-weight: 300;
+	color: black;
+	margin-top: 1.6em;
+	padding-top: .2em;
+}
+
+h2:first-child {
+	margin-top: 1em;
+}
+
+h2:target {
+	color: #1EB300;
+}
+
+h3 {
+	font-family: '宋体','微软雅黑',Arial,sans-serif;
+	margin-top: 1.5em;
+	padding-top: .5em;
+	color: black;
+	font-weight: 500;
+	font-size: 1.4em;
+}
+
+.blog-page h3 {
+	padding-top: 0;
+}
+
+h4 {
+	font-size: 1.1em;
+	font-weight: 500;
+	margin: 1em 0 1em;
+}
+
+
+/* general layout */
+
+.container {
+	max-width: 54em;
+	padding: 0 6em 1.5em;
+	margin: 0 auto;
+}
+.footer {
+	margin-top: 50px;
+	color: #777;
+}
+
+.footer p{
+	text-align: center;
+}
+
+
+/* header */
+
+h1 {
+	margin: 1.25em 0 1.5em;
+	text-align: center;
+}
+
+h1 a {
+	display: block;
+	margin: auto;
+	padding: 0 2em;
+	-webkit-transition: 0.8s all;
+	-webkit-animation: leafanim 3s ease 3s 1 normal none;
+	transition: 0.8s all;
+	animation: leafanim 3s ease 3s 1 normal none;
+}
+
+@-webkit-keyframes leafanim {
+	50% { -webkit-filter: hue-rotate(-70deg) saturate(1.2); }
+}
+
+@keyframes leafanim {
+	50% { -webkit-filter: hue-rotate(-70deg) saturate(1.2); }
+}
+
+h1 a img {
+	display: block;
+	margin: auto;
+	max-width: 100%;
+}
+
+h1 a:hover, h1 a:focus {
+	-webkit-filter: hue-rotate(50deg) saturate(1.5);
+}
+
+h3.tagline {
+	font-weight: 300;
+	font-size: 1.5em;
+	margin-top: -.75em;
+	padding: 0;
+	color: #777;
+	text-align: center;
+	margin-bottom: 30px;
+}
+
+.nav {
+	overflow: hidden;
+	list-style: none;
+	padding: 0 30px;
+	text-align: center;
+	font-size: 1.25em;
+	margin-bottom: 40px;
+	border-bottom: 1px solid #ddd;
+	padding-bottom: 40px;
+}
+
+.nav li {
+	display: inline-block;
+	padding: .333em .5em;
+	color: #999;
+}
+
+.nav li a {
+	font-weight: 400;
+	text-decoration: none;
+}
+
+
+.ext-links {
+	position: fixed;
+	top: 1.5em;
+	right: 1.5em;
+}
+
+.ext-link {
+	display: block;
+	opacity: 0.5;
+	-webkit-animation: fadein 1s;
+	animation: fadein 1s;
+}
+.ext-link:hover {
+	opacity: 1;
+}
+@-webkit-keyframes fadein {
+	from { opacity: 0; }
+	to   { opacity: 0.5; }
+}
+@keyframes fadein {
+	from { opacity: 0; }
+	to   { opacity: 0.5; }
+}
+
+/* content */
+
+.container code, .container pre code {
+	font-family: "Consolas", "Menlo", "Lucida Console", "Courier New", monospace;
+	-webkit-font-smoothing: subpixel-antialiased;
+}
+.container pre code {
+	font-size: 14px;
+	padding: .75em 1em;
+	border-radius: 5px;
+	white-space: pre;
+	overflow: auto;
+}
+.container pre {
+	border-radius: 5px;
+}
+
+.container .map {
+	border: 1px solid #ccc;
+}
+.container .map:focus {
+	border-color: #999;
+}
+
+.quiet {
+	color: #999;
+}
+
+.features {
+	-webkit-column-count: 3;
+	-moz-column-count: 3;
+	column-count: 3;
+}
+.features ul {
+	padding-left: 1.6em;
+	margin: 0 0 1.8em;
+}
+.features h3 {
+	margin: 0 0 0.8em;
+	padding: 0;
+}
+.features h4 {
+	margin: 0 0 0.3em;
+}
+
+.no-break {
+	display: inline-block;
+	width: 100%;
+}
+
+.lemon-walk{
+    height:247px;
+    width:161px;
+    background:url(../images/lemon-animat.png) no-repeat 0 0;
+	-webkit-animation: walk 0.7s steps(1) infinite;
+     -moz-animation: walk 0.7s steps(1) infinite;
+       -o-animation: walk 0.7s steps(1) infinite;
+          animation: walk 0.7s steps(1) infinite;
+    -webkit-animation-play-state:paused;
+     -moz-animation-play-state:paused;
+       -o-animation-play-state:paused;
+          animation-play-state:paused;
+}
+
+.footer:hover .lemon-walk {
+  -webkit-animation-play-state:running;
+     -moz-animation-play-state:running;
+       -o-animation-play-state:running;
+          animation-play-state:running;
+}
+
+@-webkit-keyframes walk{
+    0% { background-position:0; }
+    6% { background-position:-161px 0; }
+    12% { background-position:-322px 0; }
+    24% { background-position:-483px 0; }
+    30% { background-position:-644px 0; }
+    36% { background-position:-805px 0; }
+	42% { background-position:-966px 0; }
+	48% { background-position:-1127px 0; }
+	54% { background-position:-1288px 0; }
+	60% { background-position:-1449px 0; }
+	66% { background-position:-1610px 0; }
+	72% { background-position:-1771px 0; }
+	78% { background-position:-1932px 0; }
+	84% { background-position:-2093px 0; }
+	90% { background-position:-2254px 0; }
+	96% { background-position:-2415px 0; }
+	100% { background-position:-2576px 0; }
+}
+
+@-moz-keyframes walk{
+    0% { background-position:0; }
+    6% { background-position:-161px 0; }
+    12% { background-position:-322px 0; }
+    24% { background-position:-483px 0; }
+    30% { background-position:-644px 0; }
+    36% { background-position:-805px 0; }
+	42% { background-position:-966px 0; }
+	48% { background-position:-1127px 0; }
+	54% { background-position:-1288px 0; }
+	60% { background-position:-1449px 0; }
+	66% { background-position:-1610px 0; }
+	72% { background-position:-1771px 0; }
+	78% { background-position:-1932px 0; }
+	84% { background-position:-2093px 0; }
+	90% { background-position:-2254px 0; }
+	96% { background-position:-2415px 0; }
+	100% { background-position:-2576px 0; }
+}
+
+.lemon-walk:hover {
+  -webkit-animation: rainbow 4s steps(36) infinite;
+}
+
+@-webkit-keyframes rainbow {
+   from { -webkit-filter:hue-rotate(10deg); }
+     to { -webkit-filter:hue-rotate(360deg); }
+}
+
+code {
+    padding: 2px 4px;
+    font-size: 90%;
+    color: #c7254e;
+    background-color: #f9f2f4;
+    border-radius: 4px;
+}

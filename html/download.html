@@ -1,0 +1,243 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+	<meta charset="utf-8">
+	<meta http-equiv="X-UA-Compatible" content="IE=edge">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+
+	<title>Map4J for Cunframework</title>
+
+	<meta name="author" content="LayoutIt!">
+
+	<link rel="shortcut icon" type="image/x-icon" href="images/favicon.ico" />
+	<link rel="icon" type="image/png" href="images/favicon.png" />
+	<link href="css/bootstrap.min.css" rel="stylesheet" />
+	<link href="css/style.css" rel="stylesheet" />
+	<link href="css/leaflet.css" rel="stylesheet" />
+	<link href="css/leaflet.draw.css" rel="stylesheet" />
+	<link href="css/nprogress.css" rel='stylesheet' />
+
+	<style type="text/css">
+		.leaflet-draw {
+			display: none;
+		}
+
+		.bs-callout {
+			padding: 10px;
+			margin-bottom: 5px;
+			border: 1px solid #eee;
+			border-left-width: 5px;
+			border-radius: 3px;
+		}
+
+		.bs-callout-info {
+			border-left-color: #1b809e;
+		}
+	</style>
+</head>
+
+<body>
+	<div class="header">
+		<nav class="navbar navbar-default">
+			<div class="container-fluid">
+				<!-- Brand and toggle get grouped for better mobile display -->
+				<div class="navbar-header">
+					<button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1"
+					 aria-expanded="false">
+						<span class="sr-only">Toggle navigation</span> <span class="icon-bar"></span> <span class="icon-bar"></span>
+						<span class="icon-bar"></span>
+					</button>
+					<a class="navbar-brand" href="#"><strong>Cunframework</strong></a>
+				</div>
+
+				<div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+					<ul class="nav navbar-nav">
+						<li class="dropdown"><a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true"
+							 aria-expanded="false">地图切换 <span class="caret"></span></a>
+							<ul id="mapPrefix" class="dropdown-menu">
+								<li><a href="#" prefix="GoogleChina">谷歌</a></li>
+								<li><a href="#" prefix="Baidu">百度</a></li>
+								<li><a href="#" prefix="AMap">高德</a></li>
+								<li><a href="#" prefix="Tencent">腾讯</a></li>
+								<li><a href="#" prefix="Tianditu">天地图</a></li>
+							</ul>
+						</li>
+						<li class="dropdown"><a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true"
+							 aria-expanded="false">画图工具 <span class="caret"></span></a>
+							<ul class="dropdown-menu">
+								<li><a id="draw_rect" href="#">矩形</a></li>
+								<li><a id="draw_circle" href="#">圆形</a></li>
+								<li><a id="draw_polygon" href="#">多边形</a></li>
+								<li role="separator" class="divider"></li>
+								<li><a id="draw_clear" href="#">清除画图</a></li>
+							</ul>
+						</li>
+						<li class="dropdown"><a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true"
+							 aria-expanded="false">地图访问 <span class="caret"></span></a>
+							<ul id="accessType" class="dropdown-menu">
+								<li><a class="online" href="#">在线服务</a></li>
+								<li><a class="offline" href="#">本地缓存</a></li>
+							</ul>
+						</li>
+					</ul>
+					<ul class="nav navbar-nav navbar-right">
+						<li class="dropdown"><a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true"
+							 aria-expanded="false">切换类型 <span class="caret"></span></a>
+							<ul id="mapSuffix" class="dropdown-menu">
+								<li><a href="#" suffix="">普通地图</a></li>
+								<li><a href="#" suffix="Satellite">卫星地图</a></li>
+								<li><a href="#" suffix="Hybrid">混合地图</a></li>
+							</ul>
+						</li>
+					</ul>
+				</div>
+				<!-- /.navbar-collapse -->
+			</div>
+			<!-- /.container-fluid -->
+		</nav>
+	</div>
+	<div class="container-fluid wrapper" style="position: absolute">
+		<div class="row">
+			<div class="left-panel col-md-3 navigation hidden-sm hidden-xs">
+				<p class="bg-info"></p>
+				<div class="panel panel-default">
+					<div class="panel-heading">下载选项</div>
+					<div class="panel-body">
+						<div class="bs-callout bs-callout-info" id="callout-alerts-dismiss-plugin">
+							<b>选取范围</b>
+						</div>
+						<div class="well well-sm">
+							<div class="row">
+								<div class="input-group">
+									<div class="input-group" style="margin-bottom:5px">
+										<span class="input-group-addon">右上角:</span>
+										<input type="text" id="lat-north" class="form-control" placeholder="北">
+										<span class="input-group-btn">
+											<button class="btn btn-default" type="button" style="border:0px;background-color: #f5f5f5;">/</button>
+										</span>
+										<input type="text" id="lon-east" class="form-control" placeholder="东">
+									</div>
+									<div class="input-group">
+										<span class="input-group-addon">左下角:</span>
+										<input type="text" id="lat-south" class="form-control" placeholder="南">
+										<span class="input-group-btn">
+											<button class="btn btn-default" type="button" style="border:0px;background-color: #f5f5f5;">/</button>
+										</span>
+										<input type="text" id="lon-west" class="form-control" placeholder="西">
+									</div>
+								</div>
+							</div>
+						</div>
+
+						<div class="bs-callout bs-callout-info" id="callout-alerts-dismiss-plugin">
+							<b>缩放级别</b>
+						</div>
+						<div class="well well-sm">
+							<div class="row">
+								<div class="input-group">
+									<div class="input-group">
+										<span class="input-group-addon">比例尺:</span>
+										<input type="number" id="from-zoom" class="form-control" placeholder="从">
+										<span class="input-group-btn">
+											<button class="btn btn-default" type="button" style="border:0px;background-color: #f5f5f5;">~</button>
+										</span>
+										<input type="number" id="to-zoom" class="form-control" placeholder="至">
+									</div>
+								</div>
+							</div>
+						</div>
+
+						<div class="bs-callout bs-callout-info" id="callout-alerts-dismiss-plugin">
+							<b>存储方式</b>
+						</div>
+						<div class="well well-sm">
+							<div class="wrapper">
+								<div class="btn-group" data-toggle="buttons">
+									<label class="btn btn-primary active"> <input type="radio" name="options" id="option1" checked> 本地
+									</label>
+									<!--
+									<label class="btn btn-primary"> <input type="radio" name="options" id="option2"> MySQL
+									</label>
+									<label class="btn btn-primary"> <input type="radio" name="options" id="option3"> SQLite
+									</label>
+									-->
+								</div>
+								<div class='clearfix'></div>
+							</div>
+						</div>
+					</div>
+				</div>
+
+				<!-- 
+				<div class="panel panel-default">
+					<div class="panel-heading">区域下载</div>
+					<div class="panel-body">
+						<div class="bs-callout bs-callout-info"
+							id="callout-alerts-dismiss-plugin">
+							<b>区域下载</b>
+						</div>
+					</div>
+				</div>
+				 -->
+				<button type="button" id="downloadBtn" class="btn btn-primary btn-lg btn-block">点击下载</button>
+				<div class="status-footer well well-sm">
+					<kbd>级别:<span class="zoom">9</span></kbd>
+					<kbd>坐标:<span class="coord"></span></kbd>
+					<kbd class="down" style="display:none">下载进度:级别 <span class="down-zoom"></span>, <span class="down-count"></span></kbd>
+				</div>
+
+				<!--
+					<div class="alert alert-warning" role="alert">
+				    <p>MAP4J支持<b>谷歌</b>,<b>百度</b>,<b>高德</b>,<b>腾讯</b>,<b>天地图(即将支持)</b>,
+				    的在线地图显示,所支持的地图服务均可切换对应的<b>普通</b>,<b>卫星</b>,<b>混合</b>地图.
+				    现在支持<b>谷歌</b>,<b>百度</b>,<b>腾讯</b>,<b>高德</b>离线地图的下载及展示,其它瓦片下载方式即将支持.
+				    </p>
+				    <p>百度的卫片使用自已的坐标系.已经完成了坐标纠偏.误差大约在1-3米之间.
+				    </p>
+				</div>
+				-->
+			</div>
+			<!-- 地图区域 -->
+			<div class="col-md-9 content">
+				<div id="map"></div>
+			</div>
+		</div>
+	</div>
+
+	<!-- myModal -->
+	<div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+		<div class="modal-dialog" role="document">
+			<div class="modal-content">
+				<div class="modal-header modal-header-primary">
+					<button type="button" class="close" data-dismiss="modal" aria-label="Close">
+						<span aria-hidden="true">&times;</span>
+					</button>
+					<h4 class="modal-title" id="myModalLabel">my title</h4>
+				</div>
+				<div id="myModalBody" class="modal-body">my body</div>
+				<div class="modal-footer">
+					<button type="button" class="btn btn-default" data-dismiss="modal">取消</button>
+					<button type="button" class="btn btn-primary">确定</button>
+				</div>
+			</div>
+		</div>
+	</div>
+
+	<script src="http://maps.google.cn/maps/api/js?v=3&sensor=false"></script>
+	<script src="js/jquery.min.js"></script>
+	<script src="js/bootstrap.min.js"></script>
+	<script src="js/leaflet.js"></script>
+	<script src="js/leaflet.draw.js"></script>
+	<script src="js/leaflet.draw.local_zh.js"></script>
+	<script src="plugins/layer/tile/Google.js"></script>
+	<script src="plugins/layer/tile/Tencent.js"></script>
+	<script src="plugins/layer/tile/AMap.js"></script>
+	<script src="plugins/layer/baiduMapAPI-150-min.js"></script>
+	<script src="plugins/layer/tile/leaflet-baidu.js"></script>
+	<script src="plugins/layer/tile/CacheLayer.js"></script>
+	<script src="js/nprogress.js"></script>
+	<script src="js/scripts.js"></script>
+</body>
+
+</html>

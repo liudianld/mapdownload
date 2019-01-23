@@ -1,0 +1,28 @@
+<html>
+  <head>
+  	<title>Leaflet</title>
+  	<link rel="stylesheet" href="../../css/leaflet.css" />
+  	<script src="../../leaflet.js"></script>
+  	<script src="../layer/tile/Tencent.js"></script>
+  </head>
+  <body>
+  	<div style="width:100%; height:100%" id="map"></div>
+      <script type='text/javascript'>
+        var map = new L.Map('map', {center: new L.LatLng(45.7441, 126.7023), zoom: 10 });
+        var osm = new L.TileLayer('http://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png');
+        //ROADMAP(普通地图), RealROADMAP(路网), SATELLITE(卫星), TERRAIN(地形)
+        var ROADMAP = new L.TencentLayer().addTo(map);
+        var RealROADMAP = new L.TencentLayer("RealROADMAP").addTo(map);
+        var SATELLITE = new L.TencentLayer("SATELLITE").addTo(map);
+        var TERRAIN = new L.TencentLayer("TERRAIN").addTo(map);
+        
+        map.addControl(new L.Control.Layers({
+            "OSM":osm, 
+            "ROADMAP":ROADMAP, 
+            "RealROADMAP":RealROADMAP,
+            "SATELLITE":SATELLITE, 
+            "TERRAIN":TERRAIN
+        }, {}));
+      </script>
+  </body>
+</html>
