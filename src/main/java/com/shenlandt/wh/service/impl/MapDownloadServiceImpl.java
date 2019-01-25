@@ -1,6 +1,7 @@
 package com.shenlandt.wh.service.impl;
 
 import java.io.IOException;
+import java.net.URL;
 import java.util.HashMap;
 import java.util.List;
 
@@ -101,9 +102,16 @@ public class MapDownloadServiceImpl implements MapDownloadService {
 			for (LevelStatus ls : lss) {
 				List<TileStatus> tss = ls.getTss();
 				for (TileStatus ts : tss) {
-					PureImage img = GMaps.getInstance().GetImageFrom(provider, ts.getPoint(), ts.getLs().getLevel());
-                    ts.getLs().getDs().getProvider().CacheImage(ts.getLs().getLevel(), ts.getPoint(), img);
-					ts.isDown(true);
+					LOGGER.info("开始下载瓦片，下载地址 " + ts.getUrl());
+					try{
+						PureImage img = GMaps.getInstance().GetImageFrom(provider, ts.getPoint(), ts.getLs().getLevel());
+						ts.getLs().getDs().getProvider().CacheImage(ts.getLs().getLevel(), ts.getPoint(), img);
+						ts.isDown(true);
+					}catch (IOException e) {
+						LOGGER.error(e.getMessage());
+						ts.isDown(false);
+						this.onDownloadFail(ts.getUrl(), ts);
+					}
 				}
 			}
 			sendMap.put("isError", false);
@@ -149,5 +157,26 @@ public class MapDownloadServiceImpl implements MapDownloadService {
         return sendMap;
 
 	}
+	
+    /**
+     * 处理下载失败
+     * 失败后把下载失败的图片URL进行记录. 当全部瓦片下载完成后告知前台,
+     * 由用户决定是否再次下载的图片.
+     * @param url
+     */
+    public void onDownloadFail(String url, TileStatus ts) {
+        ts.isDown(false);
+//        isDone(ts, channel);
+        
+        //写入失败日志
+        GMapProvider provider = ts.getLs().getDs().getProvider();
+        
+        String path = GMaps.Instance.tilePath+"/"+
+                provider.getName() + "/downfail.m4j";
+        
+        String cachePath = provider.getCachePath(ts.getLs().getLevel(), ts.getPoint());
+        FileUtils.logDownFail(path, cachePath, url);
+        LOGGER.info(String.format("下载失败, URL: %s", url));
+    }
 
 }

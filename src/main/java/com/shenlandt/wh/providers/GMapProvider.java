@@ -1,6 +1,5 @@
 package com.shenlandt.wh.providers;
 
-import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;

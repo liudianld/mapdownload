@@ -19,7 +19,8 @@ import com.shenlandt.wh.utils.DateTimeUtil;
 public abstract class BaiduMapProviderBase extends GMapProvider{
     //原来：http://q3.baidu.com/it/u=x=721;y=209;z=12;v=014;type=web&fm=44
     //更新：http://online1.map.bdimg.com/tile/?qt=tile&x=23144&y=6686&z=17&styles=pl
-    public static final String UrlFormat = "http://online{0}.map.bdimg.com/tile/?qt=tile&x={1}&y={2}&z={3}&styles=pl&udt=20150213";
+//	http://online1.map.bdimg.com/onlinelabel/qt=tile&x=6163&y=1280&z=15
+    public static final String UrlFormat = "http://online{0}.map.bdimg.com/onlinelabel/?qt=tile&x={1}&y={2}&z={3}";
     
     public static final Integer serverNum = 9;
     

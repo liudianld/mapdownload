@@ -182,7 +182,7 @@ NProgress.start();
     //Leaflet
     var map = L.map('map', {
         center: [30.44285652149073, 114.46136561263256],
-        zoom: 13
+        zoom: 12
     });
     var myMap = map;
 
@@ -279,15 +279,28 @@ NProgress.start();
 
         var northEast = layer.getBounds().getNorthEast();
         var southWest = layer.getBounds().getSouthWest();
+        var northWest = {
+            lat:"",
+            lng:""
+        };
+        var southEast = {
+            lat:"",
+            lng:""
+        };
+        northWest.lat = northEast.lat;
+        northWest.lng = southWest.lng;
+        southEast.lat = southWest.lat;
+        southEast.lng = northEast.lng;
 
-        $("#lat-north").val(northEast.lat);
-        $("#lon-east").val(northEast.lng);
-        $("#lat-south").val(southWest.lat);
-        $("#lon-west").val(southWest.lng);
 
-        layer.bindPopup('范围: -fff-');
+        $("#lat-north").val(northWest.lat);
+        $("#lon-east").val(northWest.lng);
+        $("#lat-south").val(southEast.lat);
+        $("#lon-west").val(southEast.lng);
 
-        //window.geo.model("fff", JSON.stringify(latLngs), function(){alert(JSON.stringify(latLngs))})
+        // layer.bindPopup('范围: -fff-');
+
+        // window.geo.model("fff", JSON.stringify(latLngs), function(){alert(JSON.stringify(latLngs))})
     });
 
     $(".status-footer .zoom").text(myMap.getZoom())
