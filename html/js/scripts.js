@@ -114,70 +114,8 @@ NProgress.start();
                     , error: errorCallback
                 });
             }
-        },
-
-        sendSocket: function (message) {
-            if (!window.WebSocket) {
-                return;
-            }
-            if (socket.readyState == WebSocket.OPEN) {
-                socket.send(message);
-            } else {
-                geo.modelError("错误", "socket 连接没有建立", false);
-            }
         }
     };
-
-    //Websockets
-    // var socket;
-    // if (window.WebSocket) {
-
-
-    //     socket = new WebSocket("ws://"+window.location.host+"/socket/mapDownload");
-    //     socket.onmessage = function(event) {
-    //         //geo.model("通知", event.data, false);
-    //         var data = JSON.parse(event.data);  
-
-    //         if(data.isError){
-    //             geo.modelError(data.title||"错误", data.content, false);
-    //             $("#downloadBtn").text("点击下载"); 
-    //             $("#downloadBtn").prop('disabled', false);
-    //             $(".status-footer .down").hide();
-    //             return;
-    //         }else{
-    //             if(data.isDone){
-    //                 $("#downloadBtn").text("点击下载"); 
-    //                 $("#downloadBtn").prop('disabled', false);
-
-    //                 var ds = data.status;
-    //                 var repeat = data.repeat || 0;
-    //                 if(ds.failCount!=0){
-    //                     geo.modelWarning(
-    //                             "警告：有未完成的下载, 重试次数:"+repeat, 
-    //                             "本次下载,总共:"+ds.tileCount+", 成功:"+ds.downCount+", 失败:"+ds.failCount+
-    //                             " <br />点击确定将尝试再次下载失败的瓦片,或者可以稍候重新下载！",
-    //                             function(){
-    //                                 var data = {
-    //                                     downType: 'fail', 
-    //                                     failRepeat: repeat,
-    //                                     providerName: mapProvider
-    //                                 };
-    //                                 geo.sendSocket(JSON.stringify(data));
-    //                             }
-    //                     );
-    //                 }else
-    //                     geo.modelSuccess("通知", "全部瓦片下载完成! 总共:"+ds.tileCount+", 成功:"+ds.downCount+", 失败:"+ds.failCount);
-    //                 return;
-    //             }else{
-    //                 $(".status-footer .down-zoom").text(data.currentZoom);
-    //                 $(".status-footer .down-count").text(data.tileNum+"/"+data.tileCount);
-    //             }
-    //         }
-    //     };
-    // } else {
-    //     geo.modelWarning("警告", "您的浏览器不支持  Websockets. (建议使用  Chrome)", false);
-    //     return;
-    // }
 
     //Leaflet
     var map = L.map('map', {
@@ -221,8 +159,9 @@ NProgress.start();
         , BaiduSatelliteMap: new L.BaiduLayer("SATELLITE")                             //百度卫星地图
         , BaiduHybridMap: [new L.BaiduLayer("SATELLITE"), new L.BaiduLayer("HYBRID")]  //百度混合地图
     };
-
-    var layer = [layersDef.TencentMap];
+    
+    // 初始化地图为高德地图
+    var layer = [layersDef.AMapMap];
     layer[0].on('load', function (e) {
         NProgress.done();
     });
@@ -280,12 +219,12 @@ NProgress.start();
         var northEast = layer.getBounds().getNorthEast();
         var southWest = layer.getBounds().getSouthWest();
         var northWest = {
-            lat:"",
-            lng:""
+            lat: "",
+            lng: ""
         };
         var southEast = {
-            lat:"",
-            lng:""
+            lat: "",
+            lng: ""
         };
         northWest.lat = northEast.lat;
         northWest.lng = southWest.lng;
@@ -342,6 +281,77 @@ NProgress.start();
     $("#draw_clear").click(function () {
         $(this).parents('.dropdown-menu').find('li').removeClass("active");
         drawnItems.clearLayers();
+    });
+
+    /**
+     * 区域下载按钮点击事件
+     */
+    $("#areaDownload").click(function () {
+        var strs = new Array();
+        var polyline = new Array();
+        var url = "https://restapi.amap.com/v3/config/district?key=86c8686ee6d8b5db26ac753231d7206b&keywords=长清区&subdistrict=2&extensions=all";
+        $.ajaxSettings.async = false;
+        $.getJSON(url, function (json) {
+            strs = json.districts[0].center.split(",");
+            polyline = json.districts[0].polyline.split("|");
+            name = json.districts[0].name;
+            adcode = json.districts[0].adcode;
+        });
+        //生成以|分割的二维数组
+        var len1 = polyline.length;
+        var n = 1;
+        var lineNum = len1 % n === 0 ? len1 / n : Math.floor((len1 / n) + 1);
+        var towArray = new Array();
+        for (var i = 0; i < lineNum; i++) {
+            // slice() 方法返回一个从开始到结束（不包括结束）选择的数组的一部分浅拷贝到一个新数组对象。且原始数组不会被修改。
+            var temp = polyline.slice(i * n, i * n + n);
+            towArray.push(temp);
+        }
+        // console.log(towArray);
+
+        //生成三维数组
+        var threeArray = new Array();
+        for (var i = 0; i < towArray.length; i++) {
+            var temp = towArray[i].toString().replaceAll(";",",").split(",");
+            var len2 = temp.length;
+            // console.log(len2);
+            var n = 2;
+            var lineNum = len2 % n === 0 ? len2 / n : Math.floor((len2 / n) + 1);
+            var towArray2 = new Array();
+            for (var j = 0; j < lineNum; j++) {
+                // slice() 方法返回一个从开始到结束（不包括结束）选择的数组的一部分浅拷贝到一个新数组对象。且原始数组不会被修改。
+                var temp2 = temp.slice(j * n, j * n + n);
+                towArray2.push(temp2);
+            }
+            // console.log(towArray2);
+            threeArray.push(towArray2);
+            // console.log(b);
+        }
+        // console.log(threeArray);
+        var geojson =
+        {
+            "type": "Feature",
+            "properties": {
+                "id": adcode,
+                "name": name,
+                "length": 0,
+                "area": 0
+            },
+            "geometry": {
+                "type": "Polygon",
+                "coordinates": threeArray
+            }
+        };
+        var geoLayer = L.geoJson(geojson).addTo(map);
+        // geoList = new L.Control.GeoJSONSelector(geoLayer, {
+        //     zoomToLayer: true,
+        //     listDisabled: false,
+        //     activeListFromLayer: false,
+        //     activeLayerFromList: false,
+        //     listOnlyVisibleLayers: false
+        // }).addTo(map);
+
+        map.setView([strs[1],strs[0]], 7);
     });
 
     //点击下载按钮时触发
@@ -436,7 +446,7 @@ NProgress.start();
         }
     }
 
-    var mapProvider = "TencentMap", providerPrefix = "Tencent", providerSuffix = "";
+    var mapProvider = "AMapMap", providerPrefix = "AMap", providerSuffix = "";
     //地图切换按钮事件
     $("#mapPrefix a").click(function () {
         var prefix = $(this).attr("prefix");

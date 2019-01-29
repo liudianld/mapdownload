@@ -17,6 +17,7 @@
 	<link href="css/leaflet.css" rel="stylesheet" />
 	<link href="css/leaflet.draw.css" rel="stylesheet" />
 	<link href="css/nprogress.css" rel='stylesheet' />
+	<link href="plugins/leafletgeojson/css/leaflet-geojson-selector.css" rel="stylesheet" />
 
 	<style type="text/css">
 		.leaflet-draw {
@@ -57,7 +58,7 @@
 							 aria-expanded="false">地图切换 <span class="caret"></span></a>
 							<ul id="mapPrefix" class="dropdown-menu">
 								<!--<li><a href="#" prefix="GoogleChina">谷歌</a></li>-->
-								<li><a href="#" prefix="Baidu">百度</a></li>
+								<!-- <li><a href="#" prefix="Baidu">百度</a></li> -->
 								<li><a href="#" prefix="AMap">高德</a></li>
 								<li><a href="#" prefix="Tencent">腾讯</a></li>
 								<!--<li><a href="#" prefix="Tianditu">天地图</a></li>-->
@@ -79,6 +80,9 @@
 								<li><a class="online" href="#">在线服务</a></li>
 								<li><a class="offline" href="#">本地缓存</a></li>
 							</ul>
+						</li>
+						<li class="dropdown"><a id="areaDownload" href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true"
+							aria-expanded="false">区域下载</a>
 						</li>
 					</ul>
 					<ul class="nav navbar-nav navbar-right">
@@ -169,8 +173,8 @@
 					</div>
 				</div>
 
-				<!-- 
-				<div class="panel panel-default">
+				
+				<!-- <div class="panel panel-default">
 					<div class="panel-heading">区域下载</div>
 					<div class="panel-body">
 						<div class="bs-callout bs-callout-info"
@@ -178,8 +182,8 @@
 							<b>区域下载</b>
 						</div>
 					</div>
-				</div>
-				 -->
+				</div> -->
+				
 				<button type="button" id="downloadBtn" class="btn btn-primary btn-lg btn-block">点击下载</button>
 				<div class="status-footer well well-sm">
 					<kbd>级别:<span class="zoom">9</span></kbd>
@@ -238,6 +242,9 @@
 	<script src="plugins/layer/tile/CacheLayer.js"></script>
 	<script src="js/nprogress.js"></script>
 	<script src="js/scripts.js"></script>
+	<script src="plugins/leafletgeojson/js/leaflet-geojson-selector.js"></script>
+	<script src="plugins/layer/area/Amap.js"></script>
+	<script src="js/utils.js"></script>
 </body>
 
 </html>
