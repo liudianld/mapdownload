@@ -159,7 +159,7 @@ NProgress.start();
         , BaiduSatelliteMap: new L.BaiduLayer("SATELLITE")                             //百度卫星地图
         , BaiduHybridMap: [new L.BaiduLayer("SATELLITE"), new L.BaiduLayer("HYBRID")]  //百度混合地图
     };
-    
+
     // 初始化地图为高德地图
     var layer = [layersDef.AMapMap];
     layer[0].on('load', function (e) {
@@ -286,7 +286,171 @@ NProgress.start();
     /**
      * 区域下载按钮点击事件
      */
+    var geoLayer;
+    var areaCardFlag = true;
     $("#areaDownload").click(function () {
+        if (areaCardFlag) {
+            document.getElementById("areacard").style.visibility = "visible";//显示
+            areaCardFlag = false;
+        } else {
+            if (geoLayer){
+                geoLayer.remove();
+            }
+            document.getElementById("areacard").style.visibility = "hidden";//显示
+            areaCardFlag = true;
+        }
+    });
+
+    $("#province").click(function () {
+        var obj = document.getElementById("province");
+        search(obj);
+    });
+    $("#city").click(function () {
+        var obj = document.getElementById("city");
+        search(obj);
+    });
+    $("#district").click(function () {
+        var obj = document.getElementById("district");
+        search(obj);
+    });
+    $("#street").click(function () {
+        var obj = document.getElementById("street");
+        search(obj);
+    });
+
+    var district, polygons = [], citycode;
+    var citySelect = document.getElementById('city');
+    var districtSelect = document.getElementById('district');
+    var areaSelect = document.getElementById('street');
+
+    //行政区划查询
+    var opts = {
+        subdistrict: 1,   //返回下一级行政区
+        showbiz: false  //最后一级返回街道信息
+    };
+    district = new AMap.DistrictSearch(opts);//注意：需要使用插件同步下发功能才能这样直接使用
+    district.search('中国', function (status, result) {
+        if (status == 'complete') {
+            getData(result.districtList[0]);
+        }
+    });
+    function getData(data, level) {
+        var threeArray = data.threeArray;
+        if (threeArray) {
+            map.setView([data.center.lat, data.center.lng], 7);
+            var adcode = data.adcode;
+            var name = data.name;
+            var geojson =
+            {
+                "type": "Feature",
+                "properties": {
+                    "id": adcode,
+                    "name": name,
+                    "length": 0,
+                    "area": 0
+                },
+                "geometry": {
+                    "type": "Polygon",
+                    "coordinates": threeArray
+                }
+            };
+            if (geoLayer){
+                geoLayer.remove();
+            }
+            geoLayer = L.geoJson(geojson).addTo(map);
+        }
+
+        //清空下一级别的下拉列表
+        if (level === 'province') {
+            citySelect.innerHTML = '';
+            districtSelect.innerHTML = '';
+            areaSelect.innerHTML = '';
+        } else if (level === 'city') {
+            districtSelect.innerHTML = '';
+            areaSelect.innerHTML = '';
+        } else if (level === 'district') {
+            areaSelect.innerHTML = '';
+        }
+
+        var subList = data.districtList;
+        if (subList) {
+            var contentSub = new Option('--请选择--');
+            var curlevel = subList[0].level;
+            var curList = document.querySelector('#' + curlevel);
+            curList.add(contentSub);
+            for (var i = 0, l = subList.length; i < l; i++) {
+                var name = subList[i].name;
+                var levelSub = subList[i].level;
+                var cityCode = subList[i].citycode;
+                contentSub = new Option(name);
+                contentSub.setAttribute("value", levelSub);
+                contentSub.center = subList[i].center;
+                contentSub.adcode = subList[i].adcode;
+                curList.add(contentSub);
+            }
+        }
+
+    }
+
+    function search(obj) {
+        //清除地图上所有覆盖物
+        // map.setView([115.980367, 36.456013], 7);
+        for (var i = 0, l = polygons.length; i < l; i++) {
+            polygons[i].setMap(null);
+        }
+        var option = obj[obj.options.selectedIndex];
+        var keyword = option.text; //关键字
+        var adcode = option.adcode;
+        district.setLevel(option.value); //行政区级别
+        district.setExtensions('all');
+        //行政区查询
+        //按照adcode进行查询可以保证数据返回的唯一性
+        district.search(adcode, function (status, result) {
+            if (status === 'complete') {
+                // console.log(result.districtList[0].boundaries);
+                var boundaries = result.districtList[0].boundaries;
+                var threeArray = new Array();
+                var maxLat = 0;
+                var minLat = 999;
+                var maxLng = 0;
+                var minLng = 999;
+                for (var i = 0; i < boundaries.length; i++) {
+                    //第一层外层循环
+                    var firstArr = boundaries[i];
+                    var sceondArr = new Array();
+                    for (var j = 0; j < firstArr.length; j++) {
+                        // 第二层循环
+                        var thirdArr = new Array();
+                        // 获取经度维度的最大值跟最小值
+                        var lng = firstArr[j].lng;//经度
+                        var lat = firstArr[j].lat;//维度
+                        if (parseFloat(lng) > maxLng){
+                            maxLng
+                        }
+                        maxLng = (parseFloat(lng) - maxLng > 0) ? lng : maxLng;
+                        minLng = (minLng - parseFloat(lng) > 0) ? lng : minLng;
+                        maxLat = (parseFloat(lat) - maxLat > 0) ? lat : maxLat;
+                        minLat = (minLat - parseFloat(lat) > 0) ? lat : minLat;
+
+                        thirdArr[0] = lng;
+                        thirdArr[1] = lat;
+                        sceondArr.push(thirdArr);
+                    }
+                    threeArray.push(sceondArr);
+                }
+                $("#lat-north").val(maxLat);
+                $("#lon-east").val(maxLng);
+                $("#lat-south").val(minLat);
+                $("#lon-west").val(minLng);
+                // console.log(threeArray);
+                result.districtList[0].threeArray = threeArray;
+                getData(result.districtList[0], obj.id);
+            }
+        });
+    }
+
+    //区域选择器
+    function areaSelect() {
         var strs = new Array();
         var polyline = new Array();
         var url = "https://restapi.amap.com/v3/config/district?key=86c8686ee6d8b5db26ac753231d7206b&keywords=长清区&subdistrict=2&extensions=all";
@@ -312,7 +476,7 @@ NProgress.start();
         //生成三维数组
         var threeArray = new Array();
         for (var i = 0; i < towArray.length; i++) {
-            var temp = towArray[i].toString().replaceAll(";",",").split(",");
+            var temp = towArray[i].toString().replaceAll(";", ",").split(",");
             var len2 = temp.length;
             // console.log(len2);
             var n = 2;
@@ -351,8 +515,8 @@ NProgress.start();
         //     listOnlyVisibleLayers: false
         // }).addTo(map);
 
-        map.setView([strs[1],strs[0]], 7);
-    });
+        map.setView([strs[1], strs[0]], 7);
+    }
 
     //点击下载按钮时触发
     $("#downloadBtn").click(function () {

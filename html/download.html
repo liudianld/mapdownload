@@ -18,6 +18,9 @@
 	<link href="css/leaflet.draw.css" rel="stylesheet" />
 	<link href="css/nprogress.css" rel='stylesheet' />
 	<link href="plugins/leafletgeojson/css/leaflet-geojson-selector.css" rel="stylesheet" />
+	<link href="plugins/css/AmapPlungin.css" rel="stylesheet" />
+	<!-- <link rel="stylesheet" href="https://a.amap.com/jsapi_demos/static/demo-center/css/demo-center.css" /> -->
+
 
 	<style type="text/css">
 		.leaflet-draw {
@@ -82,7 +85,24 @@
 							</ul>
 						</li>
 						<li class="dropdown"><a id="areaDownload" href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true"
-							aria-expanded="false">区域下载</a>
+							 aria-expanded="false">区域下载</a>
+							<!-- <ul class="dropdown-menu">
+								<li class="dropdown-submenu">
+									<a tabindex="-1" href="#">山东省</a>
+									<ul class="dropdown-menu">
+										<li class="dropdown-submenu">
+											<a tabindex="-1" href="#">济南市</a>
+											<ul class="dropdown-menu">
+												<li><a tabindex="-1" href="#">天桥区</a></li>
+												<li><a tabindex="-1" href="#">槐荫区</a></li>
+											</ul>
+										</li>
+										<li><a tabindex="-1" href="#">青岛市</a></li>
+									</ul>
+								</li>
+								<li><a tabindex="-1" href="#">湖北省</a></li>
+
+							</ul> -->
 						</li>
 					</ul>
 					<ul class="nav navbar-nav navbar-right">
@@ -173,7 +193,7 @@
 					</div>
 				</div>
 
-				
+
 				<!-- <div class="panel panel-default">
 					<div class="panel-heading">区域下载</div>
 					<div class="panel-body">
@@ -183,7 +203,7 @@
 						</div>
 					</div>
 				</div> -->
-				
+
 				<button type="button" id="downloadBtn" class="btn btn-primary btn-lg btn-block">点击下载</button>
 				<div class="status-footer well well-sm">
 					<kbd>级别:<span class="zoom">9</span></kbd>
@@ -228,7 +248,28 @@
 		</div>
 	</div>
 
+	<div id = "areacard" class="input-card" style="visibility:hidden;">
+		<h4>下属行政区查询</h4>
+		<div class="input-item">
+			<div class="input-item-prepend"><span class="input-item-text">省市区</span></div>
+			<select id='province' style="width:100px"></select>
+		</div>
+		<div class="input-item">
+			<div class="input-item-prepend"><span class="input-item-text">地级市</span></div>
+			<select id='city' style="width:100px"></select>
+		</div>
+		<div class="input-item">
+			<div class="input-item-prepend"><span class="input-item-text">区县</span></div>
+			<select id='district' style="width:100px"></select>
+		</div>
+		<div class="input-item">
+			<div class="input-item-prepend"><span class="input-item-text">街道</span></div>
+			<select id='street' style="width:100px"></select>
+		</div>
+	</div>
+
 	<script src="http://maps.google.cn/maps/api/js?v=3&sensor=false"></script>
+	<script type="text/javascript" src="https://webapi.amap.com/maps?v=1.4.12&key=fcb054e36c6f2b62533f04313136b987&plugin=AMap.DistrictSearch"></script>
 	<script src="js/jquery.min.js"></script>
 	<script src="js/bootstrap.min.js"></script>
 	<script src="js/leaflet.js"></script>
@@ -243,7 +284,6 @@
 	<script src="js/nprogress.js"></script>
 	<script src="js/scripts.js"></script>
 	<script src="plugins/leafletgeojson/js/leaflet-geojson-selector.js"></script>
-	<script src="plugins/layer/area/Amap.js"></script>
 	<script src="js/utils.js"></script>
 </body>
 
