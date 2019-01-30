@@ -337,7 +337,15 @@ NProgress.start();
     function getData(data, level) {
         var threeArray = data.threeArray;
         if (threeArray) {
-            map.setView([data.center.lat, data.center.lng], 7);
+            var zoom = 7;
+            if ("province" === level){
+                zoom = 7;
+            }else if ("city" === level){
+                zoom = 9;
+            } else if ("district" === level){
+                zoom = 11;
+            }
+            map.setView([data.center.lat, data.center.lng], zoom);
             var adcode = data.adcode;
             var name = data.name;
             var geojson =
