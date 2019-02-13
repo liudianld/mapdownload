@@ -296,7 +296,7 @@ NProgress.start();
             if (geoLayer){
                 geoLayer.remove();
             }
-            document.getElementById("areacard").style.visibility = "hidden";//显示
+            document.getElementById("areacard").style.visibility = "hidden";//隐藏
             areaCardFlag = true;
         }
     });
@@ -316,6 +316,13 @@ NProgress.start();
     $("#street").click(function () {
         var obj = document.getElementById("street");
         search(obj);
+    });
+    $("#areaSelectClose").click(function () {
+        if (geoLayer){
+            geoLayer.remove();
+        }
+        document.getElementById("areacard").style.visibility = "hidden";//隐藏
+        areaCardFlag = true;
     });
 
     var district, polygons = [], citycode;
@@ -343,6 +350,8 @@ NProgress.start();
             }else if ("city" === level){
                 zoom = 9;
             } else if ("district" === level){
+                zoom = 11;
+            } else if ("street" === level){
                 zoom = 11;
             }
             map.setView([data.center.lat, data.center.lng], zoom);

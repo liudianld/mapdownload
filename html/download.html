@@ -84,8 +84,8 @@
 								<li><a class="offline" href="#">本地缓存</a></li>
 							</ul>
 						</li>
-						<li class="dropdown"><a id="areaDownload" href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true"
-							 aria-expanded="false">区域下载</a>
+						<li class="dropdown"><a id="areaDownload" href="#" class="dropdown-toggle" data-toggle="dropdown" role="button"
+							 aria-haspopup="true" aria-expanded="false">区域下载</a>
 							<!-- <ul class="dropdown-menu">
 								<li class="dropdown-submenu">
 									<a tabindex="-1" href="#">山东省</a>
@@ -248,8 +248,11 @@
 		</div>
 	</div>
 
-	<div id = "areacard" class="input-card" style="visibility:hidden;">
-		<h4>下属行政区查询</h4>
+	<div id="areacard" class="input-card" style="visibility:hidden;">
+		<div class="input-item">
+			<span style="width: 18rem">行政区选择</span>
+			<button id="areaSelectClose" type="button" class="close" aria-label="Close" style="float: right;"><span aria-hidden="true">&times;</span></button>
+		</div>
 		<div class="input-item">
 			<div class="input-item-prepend"><span class="input-item-text">省市区</span></div>
 			<select id='province' style="width:100px"></select>
@@ -262,7 +265,7 @@
 			<div class="input-item-prepend"><span class="input-item-text">区县</span></div>
 			<select id='district' style="width:100px"></select>
 		</div>
-		<div class="input-item">
+		<div class="input-item" style="display:hidden;">
 			<div class="input-item-prepend"><span class="input-item-text">街道</span></div>
 			<select id='street' style="width:100px"></select>
 		</div>
