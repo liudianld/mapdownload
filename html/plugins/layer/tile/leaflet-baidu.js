@@ -222,9 +222,9 @@ L.CRS.EPSGB3857 = L.extend({}, L.CRS, {
  * @class BaiduLayer
  */
 L.TileLayer.BaiduLayer = L.TileLayer.extend({
-    statics: {
-        attribution: '© 2014 Baidu - GS(2012)6003;- Data © <a target="_blank" href="http://www.navinfo.com/">NavInfo</a> & <a target="_blank" href="http://www.cennavi.com.cn/">CenNavi</a> & <a target="_blank" href="http://www.365ditu.com/">DaoDaoTong</a>'
-    },
+    // statics: {
+    //     // attribution: '© 2014 Baidu - GS(2012)6003;- Data © <a target="_blank" href="http://www.navinfo.com/">NavInfo</a> & <a target="_blank" href="http://www.cennavi.com.cn/">CenNavi</a> & <a target="_blank" href="http://www.365ditu.com/">DaoDaoTong</a>'
+    // },
 
     options: {
         minZoom: 3,

@@ -117,27 +117,23 @@ NProgress.start();
         }
     };
 
-    var latlngFromLocation = [];
-    navigator.geolocation.getCurrentPosition(function(position) {
-        var lat = position.coords.latitude;
-        var lng = position.coords.longitude;
-        latlngFromLocation.push(lat);
-        latlngFromLocation.push(lng);
-    });
+    // 根据网络获取当前的经纬度
+    // var latlngFromLocation = [];
+    // navigator.geolocation.getCurrentPosition(function(position) {
+    //     var lat = position.coords.latitude;
+    //     var lng = position.coords.longitude;
+    //     latlngFromLocation.push(lat);
+    //     latlngFromLocation.push(lng);
+    // });
 
     var options = {
         crs: L.CRS.EPSGB3857,
         center: [30.44285652149073, 114.46136561263256],
-        zoom: 12
+        zoom: 12,
+        attributionControl: false
     };
 
-
     var osm = new L.TileLayer('http://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png');
-
-    // var ROADMAP = new L.TencentLayer();
-    // var RealROADMAP = new L.TencentLayer("RealROADMAP");
-    // var SATELLITE = new L.TencentLayer("SATELLITE");
-    // var TERRAIN = new L.TencentLayer("TERRAIN");
 
     var layersDef = {
         // GoogleChinaMap: new L.Google('ROADMAP')                //Google普通地图
@@ -150,14 +146,14 @@ NProgress.start();
         // , 
         OSM: osm                                              //osm
 
-        , TencentMap: new L.TencentLayer()                                                       //腾讯普通地图
+        , TencentMap: new L.TencentLayer("ROADMAP")                                                       //腾讯普通地图
         , TencentSatelliteMap: new L.TencentLayer("SATELLITE")                                   //腾讯卫星地图
         , TencentHybridMap: [new L.TencentLayer("SATELLITE"), new L.TencentLayer("RealROADMAP")]    //腾讯混合地图
         , CacheTencentMap: new L.CacheLayer({ mapName: 'TencentMap' })                       //缓存
         , CacheTencentSatelliteMap: new L.CacheLayer({ mapName: 'TencentSatelliteMap' })     //缓存
         , CacheTencentHybridMap: new L.CacheLayer({ mapName: 'TencentHybridMap' })           //缓存
 
-        , AMapMap: new L.AMapLayer()                                                 //高德普通地图
+        , AMapMap: new L.AMapLayer("ROADMAP")                                                 //高德普通地图
         , AMapSatelliteMap: new L.AMapLayer("SATELLITE")                             //高德卫星地图
         , AMapHybridMap: [new L.AMapLayer("SATELLITE"), new L.AMapLayer("HYBRID")]    //高德混合地图
         , CacheAMapMap: new L.CacheLayer({ mapName: 'AMapMap' })                       //缓存
@@ -169,9 +165,12 @@ NProgress.start();
         BaiduHybridMap: new L.TileLayer.BaiduLayer("HYBRID"),
 
     };
-    
+
+    // 定义画图元素
     var drawnItems = new L.FeatureGroup();
+    // 定义画图获取的上下左右经纬度
     var latLngs = [];
+
     // 初始化地图为百度地图
     var layer = [layersDef.BaiduMap];
     layer[0].on('load', function (e) {
@@ -180,11 +179,12 @@ NProgress.start();
     //Leaflet
     var map = L.map('map', options);
     layer[0].addTo(map);
-    mapEvent(map, drawnItems);
+    mapEvent(map);
 
     function mapEvent(map) {
         map.addLayer(drawnItems);
-        
+
+        // 定义画图控制器
         var drawControl = new L.Control.Draw({
             draw: {
                 position: 'topleft',
@@ -215,7 +215,6 @@ NProgress.start();
         /**
          * 地图事件监听
          */
-        
         map.on('draw:created', function (e) {
             latLngs = [];
 
@@ -273,21 +272,18 @@ NProgress.start();
      * */
     //把导航栏按钮关联到leaflet.draw控件按钮上.
     $("#draw_rect").click(function () {
-        // alert(1);
         $(this).parents('.dropdown-menu').find('li').removeClass("active");
         $(this)
             .parent().addClass("active")
         $(".leaflet-draw-draw-rectangle")[0].click();
     });
     $("#draw_circle").click(function () {
-        // alert(2);
         $(this).parents('.dropdown-menu').find('li').removeClass("active");
         $(this)
             .parent().addClass("active")
         $(".leaflet-draw-draw-circle")[0].click();
     });
     $("#draw_polygon").click(function () {
-        // alert(3);
         $(this).parents('.dropdown-menu').find('li').removeClass("active");
         $(this)
             .parent().addClass("active")
@@ -369,7 +365,7 @@ NProgress.start();
             } else if ("street" === level) {
                 zoom = 11;
             }
-            map.setView([data.center.lat, data.center.lng], zoom);
+            map.flyTo([data.center.lat, data.center.lng], zoom);
             var adcode = data.adcode;
             var name = data.name;
             var geojson =
@@ -480,75 +476,6 @@ NProgress.start();
             }
         });
     }
-    // 区域选择器
-    // 作废
-    function areaSelect() {
-        var strs = new Array();
-        var polyline = new Array();
-        var url = "https://restapi.amap.com/v3/config/district?key=86c8686ee6d8b5db26ac753231d7206b&keywords=长清区&subdistrict=2&extensions=all";
-        $.ajaxSettings.async = false;
-        $.getJSON(url, function (json) {
-            strs = json.districts[0].center.split(",");
-            polyline = json.districts[0].polyline.split("|");
-            name = json.districts[0].name;
-            adcode = json.districts[0].adcode;
-        });
-        //生成以|分割的二维数组
-        var len1 = polyline.length;
-        var n = 1;
-        var lineNum = len1 % n === 0 ? len1 / n : Math.floor((len1 / n) + 1);
-        var towArray = new Array();
-        for (var i = 0; i < lineNum; i++) {
-            // slice() 方法返回一个从开始到结束（不包括结束）选择的数组的一部分浅拷贝到一个新数组对象。且原始数组不会被修改。
-            var temp = polyline.slice(i * n, i * n + n);
-            towArray.push(temp);
-        }
-        // console.log(towArray);
-
-        //生成三维数组
-        var threeArray = new Array();
-        for (var i = 0; i < towArray.length; i++) {
-            var temp = towArray[i].toString().replaceAll(";", ",").split(",");
-            var len2 = temp.length;
-            // console.log(len2);
-            var n = 2;
-            var lineNum = len2 % n === 0 ? len2 / n : Math.floor((len2 / n) + 1);
-            var towArray2 = new Array();
-            for (var j = 0; j < lineNum; j++) {
-                // slice() 方法返回一个从开始到结束（不包括结束）选择的数组的一部分浅拷贝到一个新数组对象。且原始数组不会被修改。
-                var temp2 = temp.slice(j * n, j * n + n);
-                towArray2.push(temp2);
-            }
-            // console.log(towArray2);
-            threeArray.push(towArray2);
-            // console.log(b);
-        }
-        // console.log(threeArray);
-        var geojson =
-        {
-            "type": "Feature",
-            "properties": {
-                "id": adcode,
-                "name": name,
-                "length": 0,
-                "area": 0
-            },
-            "geometry": {
-                "type": "Polygon",
-                "coordinates": threeArray
-            }
-        };
-        var geoLayer = L.geoJson(geojson).addTo(map);
-        // geoList = new L.Control.GeoJSONSelector(geoLayer, {
-        //     zoomToLayer: true,
-        //     listDisabled: false,
-        //     activeListFromLayer: false,
-        //     activeLayerFromList: false,
-        //     listOnlyVisibleLayers: false
-        // }).addTo(map);
-
-        map.setView([strs[1], strs[0]], 7);
-    }
 
     //点击下载按钮时触发
     $("#downloadBtn").click(function () {
@@ -600,11 +527,11 @@ NProgress.start();
         // postData : function (url, data, successCallback, errorCallback) {
         var url = "http://192.168.101.5:8086/downloadTile";
         // geo.postData(url, data);
-        geo.ajax.postData(url, JSON.stringify(data), success);
+        geo.ajax.postData(url, JSON.stringify(data), successData, errorData);
         // geo.sendSocket(JSON.stringify(data));
     });
 
-    function success(data) {
+    function successData(data) {
         if (data.isError) {
             geo.modelError(data.title || "错误", data.content, false);
             $("#downloadBtn").text("点击下载");
@@ -629,7 +556,7 @@ NProgress.start();
                                 failRepeat: repeat,
                                 providerName: mapProvider
                             };
-                            geo.sendSocket(JSON.stringify(data));
+                            geo.ajax.postData(url, JSON.stringify(data), successData, errorData);
                         }
                     );
                 } else
@@ -642,17 +569,27 @@ NProgress.start();
         }
     }
 
-    var mapProvider = "AMapMap", providerPrefix = "AMap", providerSuffix = "";
+    function errorData(data) {
+        // console.log('------------>errorData' + data);
+        geo.modelError(data.title || "错误", data.content || "下载失败，请重试！", false);
+        $("#downloadBtn").text("点击下载");
+        $("#downloadBtn").prop('disabled', false);
+        $(".status-footer .down").hide();
+        return;
+    }
+
+    var mapProvider = "BaiduMap", providerPrefix = "Baidu", providerSuffix = "";
     //地图切换按钮事件
     $("#mapPrefix a").click(function () {
         var prefix = $(this).attr("prefix");
 
-        // 如果是百度地图，重新加载地图
+        // 如果是百度地图，重新加载地图，因为百度地图使用的坐标系不同，因此要单独拎出来设置options
         if ("" != prefix && "Baidu" == prefix) {
             options = {
                 crs: L.CRS.EPSGB3857,
                 center: [30.44285652149073, 114.46136561263256],
-                zoom: 12
+                zoom: 12,
+                attributionControl: false
             };
         }
 
@@ -660,12 +597,16 @@ NProgress.start();
         if ("" != prefix && "Baidu" != prefix) {
             options = {
                 center: [30.44285652149073, 114.46136561263256],
-                zoom: 12
+                zoom: 12,
+                attributionControl: false
             };
         }
         // map = L.map('map', options);
+        // 清除地图以及地图的监听
         map.remove();
         map = L.map('map', options);
+
+        // 地图的监听事件
         mapEvent(map);
 
         var accessType = $("#accessType .active");
