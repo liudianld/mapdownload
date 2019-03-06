@@ -117,29 +117,38 @@ NProgress.start();
         }
     };
 
-    //Leaflet
-    var map = L.map('map', {
+    var latlngFromLocation = [];
+    navigator.geolocation.getCurrentPosition(function(position) {
+        var lat = position.coords.latitude;
+        var lng = position.coords.longitude;
+        latlngFromLocation.push(lat);
+        latlngFromLocation.push(lng);
+    });
+
+    var options = {
+        crs: L.CRS.EPSGB3857,
         center: [30.44285652149073, 114.46136561263256],
         zoom: 12
-    });
-    var myMap = map;
+    };
+
 
     var osm = new L.TileLayer('http://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png');
 
-    var ROADMAP = new L.TencentLayer();
-    var RealROADMAP = new L.TencentLayer("RealROADMAP");
-    var SATELLITE = new L.TencentLayer("SATELLITE");
-    var TERRAIN = new L.TencentLayer("TERRAIN");
+    // var ROADMAP = new L.TencentLayer();
+    // var RealROADMAP = new L.TencentLayer("RealROADMAP");
+    // var SATELLITE = new L.TencentLayer("SATELLITE");
+    // var TERRAIN = new L.TencentLayer("TERRAIN");
 
     var layersDef = {
-        GoogleChinaMap: new L.Google('ROADMAP')                //Google普通地图
-        , GoogleChinaSatelliteMap: new L.Google('SATELLITE')    //Google卫星地图
-        , GoogleChinaHybridMap: new L.Google('HYBRID')          //Google混合地图
-        , CacheGoogleChinaMap: new L.CacheLayer({ mapName: 'GoogleChinaMap' })                      //缓存
-        , CacheGoogleChinaSatelliteMap: new L.CacheLayer({ mapName: 'GoogleChinaSatelliteMap' })    //缓存
-        , CacheGoogleChinaHybridMap: new L.CacheLayer({ mapName: 'GoogleChinaHybridMap' })          //缓存       
+        // GoogleChinaMap: new L.Google('ROADMAP')                //Google普通地图
+        // , GoogleChinaSatelliteMap: new L.Google('SATELLITE')    //Google卫星地图
+        // , GoogleChinaHybridMap: new L.Google('HYBRID')          //Google混合地图
+        // , CacheGoogleChinaMap: new L.CacheLayer({ mapName: 'GoogleChinaMap' })                      //缓存
+        // , CacheGoogleChinaSatelliteMap: new L.CacheLayer({ mapName: 'GoogleChinaSatelliteMap' })    //缓存
+        // , CacheGoogleChinaHybridMap: new L.CacheLayer({ mapName: 'GoogleChinaHybridMap' })          //缓存       
 
-        , OSM: osm                                              //osm
+        // , 
+        OSM: osm                                              //osm
 
         , TencentMap: new L.TencentLayer()                                                       //腾讯普通地图
         , TencentSatelliteMap: new L.TencentLayer("SATELLITE")                                   //腾讯卫星地图
@@ -155,102 +164,108 @@ NProgress.start();
         , CacheAMapSatelliteMap: new L.CacheLayer({ mapName: 'AMapSatelliteMap' })     //缓存
         , CacheAMapHybridMap: new L.CacheLayer({ mapName: 'AMapHybridMap' })           //缓存
 
-        , BaiduMap: new L.BaiduLayer()                                                 //百度普通地图
-        , BaiduSatelliteMap: new L.BaiduLayer("SATELLITE")                             //百度卫星地图
-        , BaiduHybridMap: [new L.BaiduLayer("SATELLITE"), new L.BaiduLayer("HYBRID")]  //百度混合地图
-    };
+        , BaiduMap: new L.TileLayer.BaiduLayer("ROADMAP"),
+        BaiduSatelliteMap: new L.TileLayer.BaiduLayer("SATELLITE"),
+        BaiduHybridMap: new L.TileLayer.BaiduLayer("HYBRID"),
 
-    // 初始化地图为高德地图
-    var layer = [layersDef.AMapMap];
+    };
+    
+    var drawnItems = new L.FeatureGroup();
+    var latLngs = [];
+    // 初始化地图为百度地图
+    var layer = [layersDef.BaiduMap];
     layer[0].on('load', function (e) {
         NProgress.done();
     });
+    //Leaflet
+    var map = L.map('map', options);
     layer[0].addTo(map);
+    mapEvent(map, drawnItems);
 
-
-    var drawnItems = new L.FeatureGroup();
-    map.addLayer(drawnItems);
-
-    var drawControl = new L.Control.Draw({
-        draw: {
-            position: 'topleft',
-            polygon: {
-                allowIntersection: false,
-                shapeOptions: {
-                    color: '#FF0000'
+    function mapEvent(map) {
+        map.addLayer(drawnItems);
+        
+        var drawControl = new L.Control.Draw({
+            draw: {
+                position: 'topleft',
+                polygon: {
+                    allowIntersection: false,
+                    shapeOptions: {
+                        color: '#FF0000'
+                    }
+                },
+                rectangle: {
+                    shapeOptions: {
+                        color: '#FF0000'
+                    }
+                },
+                polyline: false,
+                circle: {
+                    shapeOptions: {
+                        color: '#662d91'
+                    }
                 }
             },
-            rectangle: {
-                shapeOptions: {
-                    color: '#FF0000'
-                }
-            },
-            polyline: false,
-            circle: {
-                shapeOptions: {
-                    color: '#662d91'
-                }
+            edit: {
+                featureGroup: drawnItems
             }
-        },
-        edit: {
-            featureGroup: drawnItems
-        }
-    });
-    map.addControl(drawControl);
+        });
+        map.addControl(drawControl);
 
-    /**
-     * 地图事件监听
-     */
-    var latLngs = [];
-    map.on('draw:created', function (e) {
-        latLngs = [];
+        /**
+         * 地图事件监听
+         */
+        
+        map.on('draw:created', function (e) {
+            latLngs = [];
 
-        var type = e.layerType,
-            layer = e.layer;
-        alert(type);
-        drawnItems.addLayer(layer);
+            var type = e.layerType,
+                layer = e.layer;
+            // alert(type);
+            drawnItems.addLayer(layer);
 
-        if (type === 'circle') {
-            //latLngs.push([ layer.getLatLng() ], layer.getRadius());
-        } else {
-            latLngs = layer.getLatLngs();
-        }
+            if (type === 'circle') {
+                //latLngs.push([ layer.getLatLng() ], layer.getRadius());
+            } else {
+                latLngs = layer.getLatLngs();
+            }
 
-        var northEast = layer.getBounds().getNorthEast();
-        var southWest = layer.getBounds().getSouthWest();
-        var northWest = {
-            lat: "",
-            lng: ""
-        };
-        var southEast = {
-            lat: "",
-            lng: ""
-        };
-        northWest.lat = northEast.lat;
-        northWest.lng = southWest.lng;
-        southEast.lat = southWest.lat;
-        southEast.lng = northEast.lng;
+            var northEast = layer.getBounds().getNorthEast();
+            var southWest = layer.getBounds().getSouthWest();
+            var northWest = {
+                lat: "",
+                lng: ""
+            };
+            var southEast = {
+                lat: "",
+                lng: ""
+            };
+            northWest.lat = northEast.lat;
+            northWest.lng = southWest.lng;
+            southEast.lat = southWest.lat;
+            southEast.lng = northEast.lng;
 
 
-        $("#lat-north").val(northWest.lat);
-        $("#lon-east").val(northWest.lng);
-        $("#lat-south").val(southEast.lat);
-        $("#lon-west").val(southEast.lng);
+            $("#lat-north").val(northWest.lat);
+            $("#lon-east").val(northWest.lng);
+            $("#lat-south").val(southEast.lat);
+            $("#lon-west").val(southEast.lng);
 
-        // layer.bindPopup('范围: -fff-');
+            // layer.bindPopup('范围: -fff-');
 
-        // window.geo.model("fff", JSON.stringify(latLngs), function(){alert(JSON.stringify(latLngs))})
-    });
+            // window.geo.model("fff", JSON.stringify(latLngs), function(){alert(JSON.stringify(latLngs))})
+        });
 
-    $(".status-footer .zoom").text(myMap.getZoom())
-    map.on("zoomend", function (e) {
-        $(".status-footer .zoom").text(myMap.getZoom());
-    });
+        $(".status-footer .zoom").text(map.getZoom())
+        map.on("zoomend", function (e) {
+            $(".status-footer .zoom").text(map.getZoom());
+        });
 
-    map.on('mousemove', function (e) {
-        $(".status-footer .coord")
-            .text(e.latlng.lng.toFixed(3) + ", " + e.latlng.lat.toFixed(3))
-    });
+        map.on('mousemove', function (e) {
+            $(".status-footer .coord")
+                .text(e.latlng.lng.toFixed(3) + ", " + e.latlng.lat.toFixed(3))
+        });
+    }
 
     /** 
      * 按钮事件 
@@ -258,21 +273,21 @@ NProgress.start();
      * */
     //把导航栏按钮关联到leaflet.draw控件按钮上.
     $("#draw_rect").click(function () {
-        alert(1);
+        // alert(1);
         $(this).parents('.dropdown-menu').find('li').removeClass("active");
         $(this)
             .parent().addClass("active")
         $(".leaflet-draw-draw-rectangle")[0].click();
     });
     $("#draw_circle").click(function () {
-        alert(2);
+        // alert(2);
         $(this).parents('.dropdown-menu').find('li').removeClass("active");
         $(this)
             .parent().addClass("active")
         $(".leaflet-draw-draw-circle")[0].click();
     });
     $("#draw_polygon").click(function () {
-        alert(3);
+        // alert(3);
         $(this).parents('.dropdown-menu').find('li').removeClass("active");
         $(this)
             .parent().addClass("active")
@@ -293,7 +308,7 @@ NProgress.start();
             document.getElementById("areacard").style.visibility = "visible";//显示
             areaCardFlag = false;
         } else {
-            if (geoLayer){
+            if (geoLayer) {
                 geoLayer.remove();
             }
             document.getElementById("areacard").style.visibility = "hidden";//隐藏
@@ -318,7 +333,7 @@ NProgress.start();
         search(obj);
     });
     $("#areaSelectClose").click(function () {
-        if (geoLayer){
+        if (geoLayer) {
             geoLayer.remove();
         }
         document.getElementById("areacard").style.visibility = "hidden";//隐藏
@@ -345,13 +360,13 @@ NProgress.start();
         var threeArray = data.threeArray;
         if (threeArray) {
             var zoom = 7;
-            if ("province" === level){
+            if ("province" === level) {
                 zoom = 7;
-            }else if ("city" === level){
+            } else if ("city" === level) {
                 zoom = 9;
-            } else if ("district" === level){
+            } else if ("district" === level) {
                 zoom = 11;
-            } else if ("street" === level){
+            } else if ("street" === level) {
                 zoom = 11;
             }
             map.setView([data.center.lat, data.center.lng], zoom);
@@ -371,7 +386,7 @@ NProgress.start();
                     "coordinates": threeArray
                 }
             };
-            if (geoLayer){
+            if (geoLayer) {
                 geoLayer.remove();
             }
             geoLayer = L.geoJson(geojson).addTo(map);
@@ -441,7 +456,7 @@ NProgress.start();
                         // 获取经度维度的最大值跟最小值
                         var lng = firstArr[j].lng;//经度
                         var lat = firstArr[j].lat;//维度
-                        if (parseFloat(lng) > maxLng){
+                        if (parseFloat(lng) > maxLng) {
                             maxLng
                         }
                         maxLng = (parseFloat(lng) - maxLng > 0) ? lng : maxLng;
@@ -465,8 +480,8 @@ NProgress.start();
             }
         });
     }
-
-    //区域选择器
+    // 区域选择器
+    // 作废
     function areaSelect() {
         var strs = new Array();
         var polyline = new Array();
@@ -631,6 +646,27 @@ NProgress.start();
     //地图切换按钮事件
     $("#mapPrefix a").click(function () {
         var prefix = $(this).attr("prefix");
+
+        // 如果是百度地图，重新加载地图
+        if ("" != prefix && "Baidu" == prefix) {
+            options = {
+                crs: L.CRS.EPSGB3857,
+                center: [30.44285652149073, 114.46136561263256],
+                zoom: 12
+            };
+        }
+
+        // 如果不是百度地图
+        if ("" != prefix && "Baidu" != prefix) {
+            options = {
+                center: [30.44285652149073, 114.46136561263256],
+                zoom: 12
+            };
+        }
+        // map = L.map('map', options);
+        map.remove();
+        map = L.map('map', options);
+        mapEvent(map);
 
         var accessType = $("#accessType .active");
         if (accessType.length != 0 && accessType.find('a').hasClass("offline")) {
