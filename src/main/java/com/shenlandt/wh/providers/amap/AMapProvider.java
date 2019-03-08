@@ -19,7 +19,7 @@ import com.shenlandt.wh.pojo.TileTypeEnum;
 public class AMapProvider extends AMapProviderBase {
     public static AMapProvider Instance = new AMapProvider();
 
-    public static final String UrlFormat = "http://webrd0{0}.is.autonavi.com/appmaptile?lang=zh_cn&size=1&scale=1&style=7&x={1}&y={2}&z={3}";
+    public static final String UrlFormat = "http://wprd0{0}.is.autonavi.com/appmaptile?x={1}&y={2}&z={3}&lang=zh_cn&size=1&scl=1&style=7";
 
     @Override
     public String getName() {

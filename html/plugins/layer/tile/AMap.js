@@ -14,9 +14,8 @@ L.AMapLayer = L.TileLayer.extend({
     },
     
     getTileUrl: function (tilePoint) {
-        
         this._url = 
-            "http://webrd0{s}.is.autonavi.com/appmaptile?lang=zh_cn&size=1&scale=1&style=7&x={x}&y={y}&z={z}"  ;
+            "http://wprd0{s}.is.autonavi.com/appmaptile?x={x}&y={y}&z={z}&lang=zh_cn&size=1&scl=1&style=7";
         var urlArgs = {
             z: tilePoint.z,
             x: tilePoint.x,
@@ -26,10 +25,10 @@ L.AMapLayer = L.TileLayer.extend({
         case 'ROADMAP':
             break;
         case 'SATELLITE':
-            this._url = "http://webst0{s}.is.autonavi.com/appmaptile?style=6&x={x}&y={y}&z={z}";
+            this._url = "http://wprd0{s}.is.autonavi.com/appmaptile?x={x}&y={y}&z={z}&lang=zh_cn&size=1&scl=1&style=6";
             break;
         case 'HYBRID':
-            this._url = "http://webst0{s}.is.autonavi.com/appmaptile?style=8&x={x}&y={y}&z={z}";
+            this._url = "http://wprd0{s}.is.autonavi.com/appmaptile?x={x}&y={y}&z={z}&lang=zh_cn&size=1&scl=1&style=8";
             break;
         }
         

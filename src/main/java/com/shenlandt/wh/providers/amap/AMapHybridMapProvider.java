@@ -16,7 +16,7 @@ public class AMapHybridMapProvider extends AMapProviderBase {
     public static AMapHybridMapProvider Instance = new AMapHybridMapProvider();
 
     public static final String UrlFormat = 
-            "http://webst0{0}.is.autonavi.com/appmaptile?style=8&x={1}&y={2}&z={3}";
+    		"http://wprd0{0}.is.autonavi.com/appmaptile?x={1}&y={2}&z={3}&lang=zh_cn&size=1&scl=1&style=8";
 
     @Override
     public String getName() {
