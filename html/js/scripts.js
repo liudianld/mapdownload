@@ -1,6 +1,7 @@
 NProgress.start();
 
 (function () {
+    // document.getElementsByClassName('leaflet-control-measure .leaflet-bar .leaflet-control').style.visibility = "hidden";
     var geo = window.geo = {
         model: function (title, content, callback) {
             $("#myModalLabel").html(title);
@@ -127,10 +128,11 @@ NProgress.start();
     // });
 
     var options = {
-        crs: L.CRS.EPSGB3857,
+        // crs: L.CRS.EPSGB3857,
         center: [30.44285652149073, 114.46136561263256],
         zoom: 12,
-        attributionControl: false
+        attributionControl: false,
+        measureControl: true
     };
 
     var osm = new L.TileLayer('http://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png');
@@ -165,26 +167,38 @@ NProgress.start();
         BaiduHybridMap: new L.TileLayer.BaiduLayer("HYBRID"),
 
     };
- 
+
     // 定义画图元素
     var drawnItems = new L.FeatureGroup();
     // 定义画图获取的上下左右经纬度
     var latLngs = [];
 
     // 初始化地图为百度地图
-    var layer = [layersDef.BaiduMap];
+    var layer = [layersDef.AMapMap];
     layer[0].on('load', function (e) {
         NProgress.done();
     });
     //Leaflet
     var map = L.map('map', options);
     layer[0].addTo(map);
-    mapEvent(map);
+    mapEvent();
 
-    function mapEvent(map) {
+    // 添加地图监听事件
+    function mapEvent() {
         map.addLayer(drawnItems);
 
         // 定义画图控制器
+        drawControl();
+
+        // 地图画图事件监听
+        drawEvent();
+
+        // 移除鼠标监听
+        mouseMove();
+    }
+
+    // 定义画图控制器
+    function drawControl() {
         var drawControl = new L.Control.Draw({
             draw: {
                 position: 'topleft',
@@ -212,9 +226,21 @@ NProgress.start();
         });
         map.addControl(drawControl);
 
-        /**
-         * 地图事件监听
-         */
+        // 将经纬度展现在左下角的提示处
+        latlngText();
+
+    }
+
+    // 将经纬度展现在左下角的提示处
+    function latlngText() {
+        $(".status-footer .zoom").text(map.getZoom())
+        map.on("zoomend", function (e) {
+            $(".status-footer .zoom").text(map.getZoom());
+        });
+    }
+
+    // 地图画图事件监听
+    function drawEvent() {
         map.on('draw:created', function (e) {
             latLngs = [];
 
@@ -254,12 +280,10 @@ NProgress.start();
 
             // window.geo.model("fff", JSON.stringify(latLngs), function(){alert(JSON.stringify(latLngs))})
         });
+    }
 
-        $(".status-footer .zoom").text(map.getZoom())
-        map.on("zoomend", function (e) {
-            $(".status-footer .zoom").text(map.getZoom());
-        });
-
+    // 鼠标移出事件监听
+    function mouseMove() {
         map.on('mousemove', function (e) {
             $(".status-footer .coord")
                 .text(e.latlng.lng.toFixed(3) + ", " + e.latlng.lat.toFixed(3))
@@ -578,7 +602,7 @@ NProgress.start();
         return;
     }
 
-    var mapProvider = "BaiduMap", providerPrefix = "Baidu", providerSuffix = "";
+    var mapProvider = "AMap", providerPrefix = "AMap", providerSuffix = "";
     //地图切换按钮事件
     $("#mapPrefix a").click(function () {
         var prefix = $(this).attr("prefix");
@@ -588,8 +612,9 @@ NProgress.start();
             options = {
                 crs: L.CRS.EPSGB3857,
                 center: [30.44285652149073, 114.46136561263256],
-                zoom: 12,
-                attributionControl: false
+                zoom: 13,
+                attributionControl: false,
+                measureControl: true
             };
         }
 
@@ -598,7 +623,8 @@ NProgress.start();
             options = {
                 center: [30.44285652149073, 114.46136561263256],
                 zoom: 12,
-                attributionControl: false
+                attributionControl: false,
+                measureControl: true
             };
         }
         // map = L.map('map', options);
@@ -607,7 +633,7 @@ NProgress.start();
         map = L.map('map', options);
 
         // 地图的监听事件
-        mapEvent(map);
+        mapEvent();
 
         var accessType = $("#accessType .active");
         if (accessType.length != 0 && accessType.find('a').hasClass("offline")) {
@@ -708,4 +734,28 @@ NProgress.start();
     function loadHandler(event) {
         NProgress.done();
     };
+
+    /**
+     *  测距用到的方法
+     
+    var celiangFlag = false;
+    $("#celiang").click(function () {
+        $(this).parents('.dropdown-menu').find('li').removeClass("active");
+        $(this).parent().addClass("active")
+        // $(".leaflet-draw-draw-rectangle")[0].click();
+        if (!celiangFlag) {
+            document.getElementById('toggleCeliang').style.display = "";
+            celiangFlag = true;
+        }
+        else {
+            document.getElementById('toggleCeliang').style.display = "none";
+            celiangFlag = false;
+        }
+
+        // document.getElementById("toggleCeliang").style.display = "";
+        // getstyle("leaflet-control-measure").display = "";
+    });
+
+    document.getElementById('toggleCeliang').style.display = "none";
+    */
 })()
