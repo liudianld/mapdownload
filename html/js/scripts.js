@@ -190,6 +190,23 @@ NProgress.start();
         // 定义画图控制器
         drawControl();
 
+        // 添加全屏控件
+        map.addControl(new L.Control.Fullscreen({
+            title: {
+                'false': '全屏',
+                'true': '退出全屏'
+            }
+        }));
+
+        // // 定位事件
+        // lc = L.control.locate({
+        //     strings: {
+        //         title: "定位到当前位置",
+        //         popup: ""
+        //     }
+        // }).addTo(map);
+
+
         // 地图画图事件监听
         drawEvent();
 
@@ -381,13 +398,13 @@ NProgress.start();
         if (threeArray) {
             var zoom = 7;
             if ("province" === level) {
-                zoom = 7;
+                zoom = 6;
             } else if ("city" === level) {
-                zoom = 9;
+                zoom = 8;
             } else if ("district" === level) {
-                zoom = 11;
+                zoom = 10;
             } else if ("street" === level) {
-                zoom = 11;
+                zoom = 10;
             }
             map.flyTo([data.center.lat, data.center.lng], zoom);
             var adcode = data.adcode;
@@ -409,7 +426,14 @@ NProgress.start();
             if (geoLayer) {
                 geoLayer.remove();
             }
-            geoLayer = L.geoJson(geojson).addTo(map);
+            geoLayer = L.geoJson(geojson,{
+                style: function (feature) {
+                    return {
+                        color: '#00FF00', // 边框颜色
+                        fillColor: '#90EE90' //填充色
+                    };
+                }
+            }).addTo(map);
         }
 
         //清空下一级别的下拉列表
@@ -758,4 +782,53 @@ NProgress.start();
 
     document.getElementById('toggleCeliang').style.display = "none";
     */
+
+    // 定位
+    //获取用户所在城市信息
+    var localteFlag = false;
+    var locateMarker = L.marker();
+    $("#locatePostion").click(function () {
+        var popContent;
+        if (!localteFlag){
+            // <span class="glyphicon glyphicon-ok"></span>
+            showCityInfo();
+            localteFlag = true;
+            popContent = '<span id="locateOk" class="glyphicon glyphicon-ok" style="margin-left: 70px"></span>';
+            $('#locatePostion').append(popContent);
+        }else{
+            locateMarker.remove();
+            localteFlag = false;
+            $('#locateOk').remove();
+        }
+    });
+
+    function showCityInfo() {
+        //实例化城市查询类
+        var citysearch = new AMap.CitySearch();
+        //自动获取用户IP，返回当前城市
+        citysearch.getLocalCity(function (status, result) {
+            if (status === 'complete' && result.info === 'OK') {
+                if (result && result.city && result.bounds) {
+                    let cityinfo = result.province + " " + result.city;
+                    // document.getElementById('info').innerHTML = '您当前所在城市：' + cityinfo;
+                    //地图显示当前城市
+                    // map.setBounds(citybounds);
+                    let locateLat = (result.bounds.ac.lat + result.bounds.oc.lat) / 2;
+                    let locateLng = (result.bounds.ac.lng + result.bounds.oc.lng) / 2;
+                    map.flyTo([locateLat, locateLng], 13);
+                    locateMarker.setLatLng([locateLat, locateLng]);
+                    locateMarker.bindTooltip(cityinfo);
+                    // locateMarker.
+                    // locateMarker = L.marker(,{
+                    //     title: cityinfo
+                    // });
+
+                    locateMarker.addTo(map);
+                    // locateMarker.bindPopup();
+                }
+            } else {
+                // document.getElementById('info').innerHTML = result.info;
+            }
+        });
+    }
 })()

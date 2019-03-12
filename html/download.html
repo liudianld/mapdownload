@@ -19,6 +19,9 @@
 	<link href="css/nprogress.css" rel='stylesheet' />
 	<link href="plugins/leafletgeojson/css/leaflet-geojson-selector.css" rel="stylesheet" />
 	<link href="plugins/leaflet-measure/css/leaflet-measure.css" rel="stylesheet" />
+	<link href="plugins/leaflet-fullscreen/css/leaflet.fullscreen.css" rel="stylesheet" />
+	<link href="plugins/leaflet-locate/css/L.Control.Locate.min.css" rel="stylesheet" />
+    <link href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet" />
 	<link href="plugins/css/AmapPlungin.css" rel="stylesheet" />
 	<!-- <link rel="stylesheet" href="https://a.amap.com/jsapi_demos/static/demo-center/css/demo-center.css" /> -->
 
@@ -88,7 +91,8 @@
 						<li class="dropdown"><a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true"
 							 aria-expanded="false">工具 <span class="caret"></span></a>
 							<ul class="dropdown-menu">
-								<li><a id="celiang" href="#">测量</a></li>
+								<!-- <li><a id="celiang" href="#">测量</a></li> -->
+								<li><a id="locatePostion" href="#">定位</a></li>
 							</ul>
 						</li>
 						<li class="dropdown"><a id="areaDownload" href="#" class="dropdown-toggle" data-toggle="dropdown" role="button"
@@ -253,22 +257,28 @@
 
 	<!-- 暂时屏蔽google地图-->
 	<!-- <script src="http://maps.google.cn/maps/api/js?v=3&sensor=false"></script> -->
-	<script type="text/javascript" src="https://webapi.amap.com/maps?v=1.4.12&key=fcb054e36c6f2b62533f04313136b987&plugin=AMap.DistrictSearch"></script>
+	<script type="text/javascript" src="https://webapi.amap.com/maps?v=1.4.12&key=fcb054e36c6f2b62533f04313136b987&plugin=AMap.DistrictSearch,AMap.CitySearch"></script>
 	<script src="js/jquery.min.js"></script>
 	<script src="js/bootstrap.min.js"></script>
 	<script src="js/leaflet.js"></script>
 	<script src="js/leaflet.draw.js"></script>
 	<script src="js/leaflet.draw.local_zh.js"></script>
 	<!-- <script src="plugins/layer/tile/Google.js"></script> -->
+	<!-- leaflet 相关插件 -->
+
+	<script src="plugins/leaflet-measure/js/leaflet-measure.js"></script>
+	<script src="plugins/leafletgeojson/js/leaflet-geojson-selector.js"></script>
+	<script src="plugins/leaflet-fullscreen/js/Leaflet.fullscreen.min.js"></script>
+	<script src="plugins/leaflet-locate/js/L.Control.Locate.js"></script>
+
+	<!-- 不同地图的js -->
 	<script src="plugins/layer/tile/Tencent.js"></script>
 	<script src="plugins/layer/tile/AMap.js"></script>
 	<script src="plugins/layer/baiduMapAPI-2.0-min.js"></script>
 	<script src="plugins/layer/tile/leaflet-baidu.js"></script>
 	<script src="plugins/layer/tile/CacheLayer.js"></script>
-	<script src="plugins/leaflet-measure/js/leaflet-measure.js"></script>
 	<script src="js/nprogress.js"></script>
 	<script src="js/scripts.js"></script>
-	<script src="plugins/leafletgeojson/js/leaflet-geojson-selector.js"></script>
 	<script src="js/utils.js"></script>
 </body>
 
