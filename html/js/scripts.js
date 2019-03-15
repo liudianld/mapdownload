@@ -179,7 +179,7 @@ NProgress.start();
         NProgress.done();
     });
     //Leaflet
-    var map = L.map('map', options);
+    window.map = L.map('map', options);
     layer[0].addTo(map);
     mapEvent();
 
@@ -197,15 +197,6 @@ NProgress.start();
                 'true': '退出全屏'
             }
         }));
-
-        // // 定位事件
-        // lc = L.control.locate({
-        //     strings: {
-        //         title: "定位到当前位置",
-        //         popup: ""
-        //     }
-        // }).addTo(map);
-
 
         // 地图画图事件监听
         drawEvent();
@@ -426,7 +417,7 @@ NProgress.start();
             if (geoLayer) {
                 geoLayer.remove();
             }
-            geoLayer = L.geoJson(geojson,{
+            geoLayer = L.geoJson(geojson, {
                 style: function (feature) {
                     return {
                         color: '#00FF00', // 边框颜色
@@ -526,8 +517,9 @@ NProgress.start();
     }
 
     //点击下载按钮时触发
+    var downloadData;
+    var downloadUrl;
     $("#downloadBtn").click(function () {
-
         var n = $("#lat-north").val();
         var e = $("#lon-east").val();
         var s = $("#lat-south").val();
@@ -561,25 +553,54 @@ NProgress.start();
         $(this).prop('disabled', true);
         $(".status-footer .down").show();
 
-        $(this).text("下载中 ...");
-        $(this).prop('disabled', true);
-        $(".status-footer .down").show();
-
-        var data = {
+        downloadData = {
             downType: 'all',
             latLngs: ll,
             fromZoom: fromZoom,
             toZoom: toZoom,
-            providerName: mapProvider
+            providerName: mapProvider,
+            countType: 'count'
         };
         // postData : function (url, data, successCallback, errorCallback) {
-        var url = "http://192.168.101.5:8086/downloadTile";
-        // geo.postData(url, data);
-        geo.ajax.postData(url, JSON.stringify(data), successData, errorData);
-        // geo.sendSocket(JSON.stringify(data));
+        downloadUrl = "http://192.168.101.5:8086/downloadTile";
+
+        geo.ajax.postData(downloadUrl, JSON.stringify(downloadData), function(data){
+            let tileSum = data.titleSum;
+            let tileSize = bytesToSize(tileSum * 20 * 1024);
+
+            geo.modelInfo("提示", "本次下载" + tileSum + "张瓦片，预计使用空间" + tileSize, downloadTitle);
+
+            $("#downloadBtn").text("点击下载");
+            $("#downloadBtn").prop('disabled', false);
+            $(".status-footer .down").hide();
+        }, errorData);
+
     });
 
+    function bytesToSize(bytes) {
+        if (bytes === 0) return '0 B';
+        var k = 1024, // or 1024
+            sizes = ['B', 'KB', 'MB', 'GB', 'TB', 'PB', 'EB', 'ZB', 'YB'],
+            i = Math.floor(Math.log(bytes) / Math.log(k));
+     
+       return (bytes / Math.pow(k, i)).toPrecision(3) + ' ' + sizes[i];
+    }
+
+    function downloadTitle() {
+        
+        // 将model的确定改成点击下载
+        document.getElementById("modelPrimary").innerHTML = "下载中...";
+        $("#modelPrimary").attr('disabled',true);
+
+        document.getElementsByClassName
+        // geo.postData(url, data);
+        downloadData.countType = "download";
+        geo.ajax.postData(downloadUrl, JSON.stringify(downloadData), successData, errorData);
+    }
+
     function successData(data) {
+        document.getElementById("modelPrimary").innerHTML = "确定";
+        $("#modelPrimary").attr('disabled',false);
         if (data.isError) {
             geo.modelError(data.title || "错误", data.content, false);
             $("#downloadBtn").text("点击下载");
@@ -608,7 +629,13 @@ NProgress.start();
                         }
                     );
                 } else
-                    geo.modelSuccess("通知", "全部瓦片下载完成! 总共:" + ds.tileCount + ", 成功:" + ds.downCount + ", 失败:" + ds.failCount);
+                    if (data.jumpCount > 0) {
+                        var tileSum = ds.tileCount + data.jumpCount;
+                        geo.modelSuccess("通知", "全部瓦片下载完成! 总共:" + tileSum + ", 成功:" + ds.downCount + ", 跳过已存在的瓦片" + data.jumpCount + ", 失败:" + ds.failCount);
+
+                    } else {
+                        geo.modelSuccess("通知", "全部瓦片下载完成! 总共:" + ds.tileCount + ", 成功:" + ds.downCount + ", 失败:" + ds.failCount);
+                    }
                 return;
             } else {
                 $(".status-footer .down-zoom").text(data.currentZoom);
@@ -618,6 +645,8 @@ NProgress.start();
     }
 
     function errorData(data) {
+        document.getElementById("modelPrimary").innerHTML = "确定";
+        $("#modelPrimary").attr('disabled',false);
         // console.log('------------>errorData' + data);
         geo.modelError(data.title || "错误", data.content || "下载失败，请重试！", false);
         $("#downloadBtn").text("点击下载");
@@ -626,7 +655,7 @@ NProgress.start();
         return;
     }
 
-    var mapProvider = "AMap", providerPrefix = "AMap", providerSuffix = "";
+    var mapProvider = "AMapMap", providerPrefix = "AMap", providerSuffix = "";
     //地图切换按钮事件
     $("#mapPrefix a").click(function () {
         var prefix = $(this).attr("prefix");
@@ -788,19 +817,30 @@ NProgress.start();
     var localteFlag = false;
     var locateMarker = L.marker();
     $("#locatePostion").click(function () {
-        var popContent;
-        if (!localteFlag){
+        let locateId = 'locateOk';
+        if (!localteFlag) {
             // <span class="glyphicon glyphicon-ok"></span>
             showCityInfo();
             localteFlag = true;
-            popContent = '<span id="locateOk" class="glyphicon glyphicon-ok" style="margin-left: 70px"></span>';
-            $('#locatePostion').append(popContent);
-        }else{
+            // popContent = '<span id="locateOk" class="glyphicon glyphicon-ok" style="margin-left: 70px"></span>';
+            // $('#locatePostion').append(popContent);
+            addOkIcon(locateId, '#locatePostion');
+        } else {
             locateMarker.remove();
             localteFlag = false;
-            $('#locateOk').remove();
+            // $('#locateOk').remove();
+            removeOkIcon(locateId);
         }
     });
+
+    function addOkIcon(id, fromId) {
+        var popContent = '<span id="' + id + '" class="glyphicon glyphicon-ok" style="margin-left: 70px"></span>';
+        $(fromId).append(popContent);
+    }
+
+    function removeOkIcon(id) {
+        $('#' + id).remove();
+    }
 
     function showCityInfo() {
         //实例化城市查询类
@@ -830,5 +870,24 @@ NProgress.start();
                 // document.getElementById('info').innerHTML = result.info;
             }
         });
-    }
+    };
+
+    var searchFlag = false;
+    $("#searchAuto").click(function () {
+        var searchOk = 'searchOk';
+        if (!searchFlag) {
+            $("#map").append('<div id="searchContainer"></div>');
+            // 加入poi搜索
+            var options = {
+                geojsonServiceAddress: "http://localhost:8086/search"
+            };
+            $("#searchContainer").GeoJsonAutocomplete(options);
+            searchFlag = true;
+            addOkIcon(searchOk, '#searchAuto')
+        } else {
+            $("#searchContainer").remove();
+            searchFlag = false;
+            removeOkIcon(searchOk);
+        }
+    });
 })()

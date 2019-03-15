@@ -7,10 +7,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.shenlandt.wh.pojo.DownloadInfo;
+import com.shenlandt.wh.pojo.SearchResult;
 import com.shenlandt.wh.service.MapDownloadService;
 
 
@@ -20,11 +22,6 @@ public class MapDownloadController {
     @Autowired
     MapDownloadService mapDownloadService;
     
-	@GetMapping("/hello")
-	public String hello() {
-		return "hello world!";
-	}
-	
 	@PostMapping("/downloadTile")
 	@ResponseBody
     public HashMap<Object, Object> downloadTile(@RequestBody DownloadInfo di) throws IOException{
@@ -34,5 +31,11 @@ public class MapDownloadController {
         else if("fail".equals(di.getDownType()))
         	ret = mapDownloadService.downloadFailTile(di);
 		return ret;
+    }
+	
+	@GetMapping("/search")
+	@ResponseBody
+    public SearchResult searchPoi(@RequestParam String search, @RequestParam int limit, @RequestParam int offset) throws Exception{
+		return mapDownloadService.searchPoi(search, limit, offset);
     }
 }

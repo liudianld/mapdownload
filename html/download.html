@@ -21,7 +21,8 @@
 	<link href="plugins/leaflet-measure/css/leaflet-measure.css" rel="stylesheet" />
 	<link href="plugins/leaflet-fullscreen/css/leaflet.fullscreen.css" rel="stylesheet" />
 	<link href="plugins/leaflet-locate/css/L.Control.Locate.min.css" rel="stylesheet" />
-    <link href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet" />
+	<link href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet" />
+	<link href="plugins/leaflet-geojson-autocomplete/css/geojsonautocomplete.min.css" rel="stylesheet" />
 	<link href="plugins/css/AmapPlungin.css" rel="stylesheet" />
 	<!-- <link rel="stylesheet" href="https://a.amap.com/jsapi_demos/static/demo-center/css/demo-center.css" /> -->
 
@@ -93,6 +94,7 @@
 							<ul class="dropdown-menu">
 								<!-- <li><a id="celiang" href="#">测量</a></li> -->
 								<li><a id="locatePostion" href="#">定位</a></li>
+								<li><a id="searchAuto" href="#">搜索</a></li>
 							</ul>
 						</li>
 						<li class="dropdown"><a id="areaDownload" href="#" class="dropdown-toggle" data-toggle="dropdown" role="button"
@@ -191,7 +193,7 @@
 				<div class="status-footer well well-sm">
 					<kbd>级别:<span class="zoom">9</span></kbd>
 					<kbd>坐标:<span class="coord"></span></kbd>
-					<kbd class="down" style="display:none">下载进度:级别 <span class="down-zoom"></span>, <span class="down-count"></span></kbd>
+					<!-- <kbd class="down" style="display:none">下载进度:级别 <span class="down-zoom"></span>, <span class="down-count"></span></kbd> -->
 				</div>
 
 				<!--
@@ -225,8 +227,8 @@
 				</div>
 				<div id="myModalBody" class="modal-body">my body</div>
 				<div class="modal-footer">
-					<button type="button" class="btn btn-default" data-dismiss="modal">关闭</button>
-					<button type="button" class="btn btn-primary">确定</button>
+					<button type="button" id="modelClose" class="btn btn-default" data-dismiss="modal">关闭</button>
+					<button type="button" id="modelPrimary" class="btn btn-primary">确定</button>
 				</div>
 			</div>
 		</div>
@@ -270,7 +272,7 @@
 	<script src="plugins/leafletgeojson/js/leaflet-geojson-selector.js"></script>
 	<script src="plugins/leaflet-fullscreen/js/Leaflet.fullscreen.min.js"></script>
 	<script src="plugins/leaflet-locate/js/L.Control.Locate.js"></script>
-
+	
 	<!-- 不同地图的js -->
 	<script src="plugins/layer/tile/Tencent.js"></script>
 	<script src="plugins/layer/tile/AMap.js"></script>
@@ -280,6 +282,7 @@
 	<script src="js/nprogress.js"></script>
 	<script src="js/scripts.js"></script>
 	<script src="js/utils.js"></script>
+	<script src="plugins/leaflet-geojson-autocomplete/js/geojsonautocomplete.js"></script>
 </body>
 
 </html>

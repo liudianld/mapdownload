@@ -14,6 +14,7 @@ public class DownloadInfo {
 	private String providerName;
 	private String downType; // all:下载所有瓦片; fail:下载失败的瓦片
 	private int failRepeat; // 失败重试次数
+	private String countType;
 
 	public int getFromZoom() {
 		return fromZoom;
@@ -51,6 +52,14 @@ public class DownloadInfo {
 		return downType;
 	}
 
+	public String getCountType() {
+		return countType;
+	}
+
+	public void setCountType(String countType) {
+		this.countType = countType;
+	}
+
 	public void setDownType(String downType) {
 		this.downType = downType;
 	}
@@ -62,4 +71,5 @@ public class DownloadInfo {
 	public void setFailRepeat(int failRepeat) {
 		this.failRepeat = failRepeat;
 	}
+
 }
